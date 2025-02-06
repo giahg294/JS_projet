@@ -1,7 +1,5 @@
 # JS_projet
 
- # Explication détaillée du code du jeu JUST ONE
-
 ## Présentation générale du jeu
 
 Le jeu **Just One** se base sur des mots mystères et des indices fournis par les joueurs pour deviner ce mot. À la fin de chaque round, le joueur doit deviner le mot mystère en fonction des indices donnés par les autres joueurs. Le score est mis à jour en fonction de la validité des indices (doublons ou non) et si la devinette est correcte.
@@ -169,6 +167,9 @@ fs.writeFileSync("propositions.txt", logPropositions.join("
 4. **Devinette du mot mystère** : Le joueur tente de deviner le mot mystère en fonction des indices.
 5. **Calcul du score** : Le score est ajusté en fonction de la réussite ou de l'échec de la devinette.
 6. **Fichier de sauvegarde** : Les propositions de chaque round sont sauvegardées dans un fichier pour garder une trace de la partie.
+
+## Lancement du jeu
+Executer la commande node.js dans le terminal.
 
 ## Conclusion
 Ce code représente une version simple mais complète du jeu **Just One**, où la logique principale est de donner des indices, deviner le mot mystère, et mettre à jour un score. La fonctionnalité de sauvegarde des propositions dans un fichier permet de conserver un historique du jeu. Ce jeu peut être amélioré avec des fonctionnalités supplémentaires comme un système de chronomètre ou des niveaux de difficulté.
