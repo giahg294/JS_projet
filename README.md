@@ -169,7 +169,10 @@ fs.writeFileSync("propositions.txt", logPropositions.join("
 6. **Fichier de sauvegarde** : Les propositions de chaque round sont sauvegardées dans un fichier pour garder une trace de la partie.
 
 ## Lancement du jeu
-Executer la commande node.js dans le terminal.
+Executer la commande node justone.js dans le terminal.
+```bash
+node justone.js
+```
 
 ## Conclusion
 Ce code représente une version simple mais complète du jeu **Just One**, où la logique principale est de donner des indices, deviner le mot mystère, et mettre à jour un score. La fonctionnalité de sauvegarde des propositions dans un fichier permet de conserver un historique du jeu. Ce jeu peut être amélioré avec des fonctionnalités supplémentaires comme un système de chronomètre ou des niveaux de difficulté.
