@@ -1,5 +1,5 @@
-const fs = require("fs");
-const readline = require("readline");
+const fs = require("fs"); // // Import file system module
+const readline = require("readline"); // module pour des interactions dans l'invité de commande
 
 // Interface pour entrer du texte dans le terminal
 const rl = readline.createInterface({
@@ -28,7 +28,8 @@ function lancerRound() {
 
         // Demander les indices à chaque joueur
         demanderIndices();
-    } else {
+    } 
+    else {
         afficherScoreFinal();
         rl.close();
     }
@@ -53,8 +54,10 @@ function verifierIndices() {
 
     // Comptage des occurrences de chaque mot
     indices.forEach(mot => {
-        occurrences[mot] = (occurrences[mot] || 0) + 1;
-    });
+        occurrences[mot] = (occurrences[mot] || 0) + 1;});
+
+    console.log(occurrences);
+    console.log(indices);    
     // On garde uniquement les mots uniques (1 seule occurrence)
     let indicesValides = indices.filter(mot => occurrences[mot] === 1);
 
@@ -63,13 +66,15 @@ function verifierIndices() {
     fs.writeFileSync("propositions.txt", logPropositions.join("\n"), "utf-8");
 
     // Afficher les indices valides avant la devinette
+    let msg = "";
+    if (indicesValides.length > 0)  {msg = indicesValides.join(", ")} else (msg = "Aucun indice valide... 😢");
     console.log("\nIndices valides :");
-    console.log(indicesValides.length > 0 ? indicesValides.join(", ") : "Aucun indice valide... 😢");
+    console.log(msg);
 
     // Demander à l'utilisateur de deviner le mot mystère
-    rl.question(`Devinez le mot mystère (Round ${round + 1}): `, (devinette) => {
-        // Vérifier si la devinette est correcte
-        if (devinette.toLowerCase().trim() === motsMysteres[round].toLowerCase()) {
+    rl.question(`Devinez le mot mystère (Round ${round + 1}): `, (reponse) => {
+        // Vérifier si la reponse est correcte
+        if (reponse.toLowerCase().trim() === motsMysteres[round].toLowerCase()) {
             score += 1;
             console.log("\n🎉 Round validé ! (+1 point)");
         } else {
