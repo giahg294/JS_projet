@@ -1,5 +1,5 @@
-const fs = require("fs"); // // Import file system module
-const readline = require("readline"); // module pour des interactions dans l'invité de commande
+const fs = require("fs"); // Importer le module du système de fichiers
+const readline = require("readline"); // Module pour des interactions dans l'invite de commande
 
 // Interface pour entrer du texte dans le terminal
 const rl = readline.createInterface({
@@ -8,7 +8,20 @@ const rl = readline.createInterface({
 });
 
 // Liste des mots mystères
-const motsMysteres = ["soleil", "chocolat", "aventure", "musique", "mystère"];
+const cartes = [
+    { carte: ["chien", "chat", "lapin"] },
+    { carte: ["arbre", "plante", "fleur"] },
+    { carte: ["voiture", "vélo", "moto"] },
+    { carte: ["pomme", "banane", "orange"] },
+    { carte: ["mer", "plage", "océan"] },
+    { carte: ["maison", "appartement", "villa"] },
+    { carte: ["montagne", "colline", "vallée"] },
+    { carte: ["ordinateur", "téléphone", "tablette"] },
+    { carte: ["football", "basketball", "tennis"] },
+    { carte: ["école", "université", "lycée"] }
+];
+
+let motMystere = "";
 let round = 0; // Suivi du round actuel
 let indices = []; // Liste des indices pour un round
 let joueurs = 5; // Nombre de joueurs
@@ -16,30 +29,58 @@ let indexJoueur = 0; // Suivi du joueur actuel
 let score = 0; // Compteur de points
 let logPropositions = []; // Stocke toutes les propositions pour l'écriture dans le fichier
 
+let cartes_piochees = [];
+let pioche = [];
+
+// Piocher 5 cartes aléatoires
+for (let i = 0; i < 5; i++) {
+    pioche.push(Math.floor(Math.random() * 10));
+}
+
+for (let i = 0; i < 5; i++) {
+    let num = pioche[i];
+    cartes_piochees.push(cartes[num]);
+}
+
 console.log("🎲 Bienvenue dans le jeu JUST ONE !");
-console.log(`📝 Il y aura ${motsMysteres.length} rounds.`);
+console.log(`Les 5 cartes piochées sont :\n${cartes_piochees.map(card => card.carte).join("\n")}`);
+console.log("\n")
+console.log(`📝 Il y aura ${cartes_piochees.length} rounds.`);
 
 // Fonction principale pour démarrer un round
-function lancerRound() {
-    if (round < motsMysteres.length) {
+async function lancerRound() {
+    if (round < cartes_piochees.length) {
+        motMystere = await demanderChoix(); // Attendre la sélection du mot mystère
         indices = []; // Réinitialiser les indices
         indexJoueur = 0; // Réinitialiser le compteur de joueur
-        console.log(`\nRound ${round + 1}: Le mot mystère est "${motsMysteres[round]}" (gardez-le secret !)`);
-
+        console.log(`\nRound ${round + 1}: Le mot mystère est "${motMystere}" (gardez-le secret !)`);
         // Demander les indices à chaque joueur
         demanderIndices();
-    } 
-    else {
+    } else {
         afficherScoreFinal();
         rl.close();
     }
+}
+
+// Fonction pour demander un choix au joueur pour le mot mystère
+function demanderChoix() {
+    return new Promise((resolve) => {
+        rl.question(`Joueur actif, choisissez un chiffre entre 1 et 3 : `, (choix) => {
+            let mot = cartes_piochees[round].carte[parseInt(choix) - 1];
+            resolve(mot);
+        });
+    });
 }
 
 // Fonction pour demander un indice à chaque joueur
 function demanderIndices() {
     if (indexJoueur < joueurs) {
         rl.question(`Joueur ${indexJoueur + 1}, entrez votre indice : `, (mot) => {
-            indices.push(mot.toLowerCase().trim());
+            if (mot === motMystere) {
+                console.log("L'indice doit être différent du mot mystère !");
+            } else {
+                indices.push(mot.toLowerCase().trim());
+            }
             indexJoueur++;
             demanderIndices();
         });
@@ -51,14 +92,10 @@ function demanderIndices() {
 // Fonction pour vérifier les indices et afficher les valides avant la devinette
 function verifierIndices() {
     let occurrences = {};
-
-    // Comptage des occurrences de chaque mot
     indices.forEach(mot => {
-        occurrences[mot] = (occurrences[mot] || 0) + 1;});
+        occurrences[mot] = (occurrences[mot] || 0) + 1;
+    });
 
-    console.log(occurrences);
-    console.log(indices);    
-    // On garde uniquement les mots uniques (1 seule occurrence)
     let indicesValides = indices.filter(mot => occurrences[mot] === 1);
 
     // Enregistrer les propositions dans un fichier
@@ -66,17 +103,18 @@ function verifierIndices() {
     fs.writeFileSync("propositions.txt", logPropositions.join("\n"), "utf-8");
 
     // Afficher les indices valides avant la devinette
-    let msg = "";
-    if (indicesValides.length > 0)  {msg = indicesValides.join(", ")} else (msg = "Aucun indice valide... 😢");
+    let msg = indicesValides.length > 0 ? indicesValides.join(", ") : "Aucun indice valide... 😢";
     console.log("\nIndices valides :");
     console.log(msg);
 
     // Demander à l'utilisateur de deviner le mot mystère
-    rl.question(`Devinez le mot mystère (Round ${round + 1}): `, (reponse) => {
-        // Vérifier si la reponse est correcte
-        if (reponse.toLowerCase().trim() === motsMysteres[round].toLowerCase()) {
+    rl.question(`Devinez le mot mystère (Round ${round + 1}) : `, (reponse) => {
+        // Vérifier si la réponse est correcte
+        if (reponse.toLowerCase().trim() === motMystere.toLowerCase()) {
             score += 1;
             console.log("\n🎉 Round validé ! (+1 point)");
+        } else if (reponse.toLowerCase().trim() === "pass") {
+            console.log("\n-- Round passé. (+0 point)");
         } else {
             score -= 1;
             console.log("\n🚫 Round non validé (mot mystère incorrect). (-1 point)");
