@@ -48,9 +48,12 @@ console.log("\n")
 console.log(`📝 Il y aura ${cartes_piochees.length} rounds.`);
 
 // Fonction principale pour démarrer un round
-async function lancerRound() {
+async function startgame() {
     if (round < cartes_piochees.length) {
         motMystere = await demanderChoix(); // Attendre la sélection du mot mystère
+        while (motMystere == undefined) {
+            console.log(`\nJoueur actif doit choisir entre 1 ou 2 ou 3 uniquement.`);
+            motMystere = await demanderChoix();};
         indices = []; // Réinitialiser les indices
         indexJoueur = 0; // Réinitialiser le compteur de joueur
         console.log(`\nRound ${round + 1}: Le mot mystère est "${motMystere}" (gardez-le secret !)`);
@@ -67,27 +70,33 @@ function demanderChoix() {
     return new Promise((resolve) => {
         rl.question(`Joueur actif, choisissez un chiffre entre 1 et 3 : `, (choix) => {
             let mot = cartes_piochees[round].carte[parseInt(choix) - 1];
-            resolve(mot);
+            resolve(mot)});
         });
-    });
-}
+};
+
 
 // Fonction pour demander un indice à chaque joueur
 function demanderIndices() {
     if (indexJoueur < joueurs) {
         rl.question(`Joueur ${indexJoueur + 1}, entrez votre indice : `, (mot) => {
-            if (mot === motMystere) {
+            // Vérifie si l'indice est le même que le mot mystère
+            if (mot.toLowerCase().trim() === motMystere.toLowerCase()) {
                 console.log("L'indice doit être différent du mot mystère !");
+                // Si l'indice est invalide, redemander un indice
+                demanderIndices();
             } else {
+                // Si l'indice est valide, l'ajouter à la liste et passer au joueur suivant
                 indices.push(mot.toLowerCase().trim());
+                indexJoueur++;
+                demanderIndices(); // Appel récursif pour demander l'indice du joueur suivant
             }
-            indexJoueur++;
-            demanderIndices();
         });
     } else {
+        // Si tous les joueurs ont donné un indice, on passe à la vérification des indices
         verifierIndices();
     }
 }
+
 
 // Fonction pour vérifier les indices et afficher les valides avant la devinette
 function verifierIndices() {
@@ -122,7 +131,7 @@ function verifierIndices() {
 
         // Passer au round suivant
         round++;
-        setTimeout(lancerRound, 2000); // Attente de 2 secondes avant de démarrer le prochain round
+        setTimeout(startgame, 2000); // Attente de 2 secondes avant de démarrer le prochain round
     });
 }
 
@@ -130,7 +139,9 @@ function verifierIndices() {
 function afficherScoreFinal() {
     console.log(`\n🏁 Jeu terminé !`);
     console.log(`Votre score final est : ${score} point(s)`);
-}
-
+    rl.question(`Recommencer ? Oui/Non: `, (reponse) => {
+        if (rep == "Oui") {startgame()};
+    });
+};
 // Lancer le premier round
-lancerRound();
+startgame();
