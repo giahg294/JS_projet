@@ -20,7 +20,7 @@ const cartes = [
     { carte: ["football", "basketball", "tennis"] },
     { carte: ["école", "université", "lycée"] }
 ];
-
+const nround = 1
 let motMystere = "";
 let round = 0; // Suivi du round actuel
 let indices = []; // Liste des indices pour un round
@@ -28,16 +28,15 @@ let joueurs = 5; // Nombre de joueurs
 let indexJoueur = 0; // Suivi du joueur actuel
 let score = 0; // Compteur de points
 let logPropositions = []; // Stocke toutes les propositions pour l'écriture dans le fichier
-
 let cartes_piochees = [];
 let pioche = [];
 
 // Piocher 5 cartes aléatoires
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < nround; i++) {
     pioche.push(Math.floor(Math.random() * 10));
 }
 
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < nround; i++) {
     let num = pioche[i];
     cartes_piochees.push(cartes[num]);
 }
@@ -61,7 +60,7 @@ async function startgame() {
         demanderIndices();
     } else {
         afficherScoreFinal();
-        rl.close();
+        rl.close()
     }
 }
 
@@ -139,9 +138,7 @@ function verifierIndices() {
 function afficherScoreFinal() {
     console.log(`\n🏁 Jeu terminé !`);
     console.log(`Votre score final est : ${score} point(s)`);
-    rl.question(`Recommencer ? Oui/Non: `, (reponse) => {
-        if (rep == "Oui") {startgame()};
-    });
 };
+
 // Lancer le premier round
 startgame();
